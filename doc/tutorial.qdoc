@@ -1,0 +1,213 @@
+/****************************************************************************
+**
+** Copyright (C) 2023 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the Qt Installer Framework.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \previouspage ifw-use-cases-settings.html
+    \page ifw-tutorial.html
+    \nextpage ifw-creating-installers.html
+
+    \title Tutorial: Creating an Installer
+
+    This tutorial describes how to create a simple installer for a small
+    project:
+
+    \image ifw-introduction-page.png "Introduction page"
+
+    This section describes the following tasks that you must carry out to
+    create the installer:
+
+    \list 1
+
+        \li Create a \e {package directory} that will have all the
+            configuration files and installable packages.
+
+        \li Create a \e {configuration file} that has information about how
+            to build the installer binaries and online repositories.
+
+        \li Create a \e {package information file} that has information
+            about the installable components.
+
+        \li Create installer content and copy it to the package directory.
+
+        \li Use the \c binarycreator tool to create the \e installer.
+
+            To create the installer pages, use the information set in the
+            configuration and package information file.
+
+    \endlist
+
+    You can find the example files in the \c{examples\tutorial} directory in the
+    Qt Installer Framework repository.
+
+    \section1 Creating a Package Directory
+
+    Create a directory structure that reflects the design of the installer and
+    allows for future extension. The directory must contain subdirectories
+    called \c config and \c packages.
+
+    \image ifw-tutorial-files.png
+
+    For more information about the package directory, see \l{Package Directory}.
+
+    \section1 Creating a Configuration File
+
+    In the \c config directory, create a file called \c config.xml with the
+    following contents:
+
+    \quotefile ../examples/tutorial/config/config.xml
+
+    The configuration file includes the following information for the
+    introduction page:
+
+    \list
+
+        \li The \c <Title> element sets the installer name and displays it on
+            the title bar (1).
+
+        \li The \c <Name> element sets the application name and adds it to
+            the page number and introduction text (2).
+
+    \endlist
+
+    \image ifw-tutorial-introduction-page.png "Introduction page"
+
+    The other elements customize the behavior of the installer:
+
+    \list
+
+        \li The \c <Version> element sets the application version number.
+
+        \li The \c <Publisher> element sets the publisher of the software
+            (as shown in the Windows Control Panel, for example).
+
+        \li The \c <StartMenuDir> element sets the name of the default
+            program group for the product in the Windows \gui Start menu.
+
+        \li The \c <TargetDir> element sets and displays \c InstallationDirectory
+            in the home directory of the current user as the default target
+            directory displayed to users (because it uses the predefined
+            variable \c @HomeDir@ as part of the value). For more information,
+            see \l{Predefined Variables}.
+
+    \endlist
+
+    For more information about the configuration file format and the available
+    elements, see \l{Configuration File}.
+
+    \section1 Creating a Package Information File
+
+    In this easy scenario, the installer handles only one component,
+    \c{com.vendor.product}. To give the installer information
+    about the component, create a file called \c package.xml with the
+    following contents and place it in the \c meta directory:
+
+    \quotefile ../examples/tutorial/packages/com.vendor.product/meta/package.xml
+
+    Below is a more detailed description of the elements in the example file.
+    For more information about the package information file, see
+    \l{Package Information File Syntax}.
+
+    \section2 Specifying Component Information
+
+    The component selection page displays information from the following elements:
+
+    \list
+
+        \li The \c <DisplayName> element sets the name of the component in the
+            component list (1).
+
+        \li The \c <Description> element sets and displays text based on the
+            selected component (2).
+
+    \endlist
+
+    \image ifw-tutorial-select-components.png
+
+    \section2 Specifying Installer Version
+
+    The \c <Version> element offers updates to users when they become
+    available.
+
+    \section2 Adding Licenses
+
+    The \c <License> element sets the name of the file, which has the
+    license agreement text (1). The license check page displays this license
+    text.
+
+    \image ifw-tutorial-license-check.png "License check page"
+
+    \section2 Selecting Default Contents
+
+    The \c <Default> element specifies whether the selected component
+    is a default value. The value \c true sets the component as selected. This
+    example uses the value \c script to resolve the value during runtime. The
+    \c <Script> element sets the name of the JavaScript script file,
+    installscript.qs.
+
+    \section1 Creating Installer Content
+
+    The \c data directory of a component can store content available for
+    installation.
+    As there is only one component, place the data in the
+    \c{packages/com.vendor.product/data} directory. The example already has
+    a file for testing purposes, but you can place basically any files in the
+    directory.
+
+    For more information about packaging rules and options, see
+    \l{Data Directory}.
+
+    \section1 Creating the Installer Binary
+
+    You are now ready to create your first installer. Switch to the
+    \c examples\tutorial directory on the command line. To create an installer called
+    YourInstaller.exe that has the packages identified by
+    com.vendor.product, enter the following command:
+
+    \list
+
+    \li On Windows:
+    \code
+    ..\..\bin\binarycreator.exe -c config\config.xml -p packages YourInstaller.exe
+    \endcode
+
+    \li On Linux or macOS:
+    \code
+    ../../bin/binarycreator -c config/config.xml -p packages YourInstaller
+    \endcode
+
+    \endlist
+
+    \IFW creates the installer in the current directory and you can deliver it
+    to end users.
+
+    For more information about using the \c binarycreator tool, see
+    \l{binarycreator}.
+
+    \note If an error message appears when you run the tutorial installer,
+    check that you used a statically built Qt to create the installer. For more
+    information, see \l{Configuring Qt}.
+*/

@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/valid.zip</file>
+        <file>data/valid.tar.gz</file>
+        <file>data/valid.tar.bz2</file>
+        <file>data/valid.tar.xz</file>
+        <file>data/valid.7z</file>
+        <file>data/valid.qbsp</file>
+    </qresource>
+</RCC>

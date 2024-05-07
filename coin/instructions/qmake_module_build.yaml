@@ -1,0 +1,55 @@
+type: Group
+instructions:
+  - type: MakeDirectory
+    directory: ".git"
+
+  - type: Group
+    instructions:
+      - type: InstallSourceArchive
+        maxTimeInSeconds: 600
+        maxTimeBetweenOutput: 600
+        project: qtsdk/tqtc-qtsdk
+        ref: master
+        directory: qtsdk/tqtc-qtsdk
+        userMessageOnFailure: "Could not install qtsdk/tqtc-qtsdk source archive. Please investigate why."
+
+  - type: SetBuildDirectory
+    directory: "{{.SourceDir}}"
+    disable_if:
+      condition: property
+      property: features
+      contains_value: OutOfSourceBuild
+  - type: Group
+    instructions:
+      - type: SetBuildDirectory
+        directory: "{{.AgentWorkingDir}}/build"
+      - type: MakeDirectory
+        directory: "{{.BuildDir}}"
+    enable_if:
+      condition: property
+      property: features
+      contains_value: OutOfSourceBuild
+  - type: ChangeDirectory
+    directory: "{{.BuildDir}}"
+
+  - type: ExecuteCommand
+    command: ["{{.InstallDir}}/bin/qmake", "CONFIG+=libarchive", "QTPLUGIN.platforms = qminimal qxcb", "INSTALL_PREFIX={{.InstallDir}}", "{{.SourceDir}}"]
+    maxTimeInSeconds: 1800
+    maxTimeBetweenOutput: 600
+    userMessageOnFailure: "Failed to run qmake, check logs."
+    enable_if:
+      condition: property
+      property: host.os
+      equals_value: Linux
+
+  - type: ExecuteCommand
+    command: ["{{.InstallDir}}/bin/qmake", "CONFIG+=libarchive", "INSTALL_PREFIX={{.InstallDir}}", "{{.SourceDir}}"]
+    maxTimeInSeconds: 1800
+    maxTimeBetweenOutput: 600
+    userMessageOnFailure: "Failed to run qmake, check logs."
+    enable_if:
+      condition: property
+      property: host.os
+      not_equals_value: Linux
+  - !include "{{installer-framework/installer-framework}}/make_instructions.yaml"
+  - !include "{{installer-framework/installer-framework}}/make_documentation.yaml"
